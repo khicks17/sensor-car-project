@@ -1,0 +1,62 @@
+#include "mbed.h"
+#include "ContinuousServo.h"
+#include "Tach.h"
+#include "TCS3472_I2C.h"
+
+TCS3472_I2C rgbsens(p9,p10);
+DigitalIn magsens(p21);
+DigitalOut magpwr(p22);
+AnalogIn sonar(p19);
+Tach tleft(p17,64);
+Tach tright(p13,64);
+
+DigitalOut red(LED1);
+DigitalOut green(LED2);
+DigitalOut blue(LED3);
+DigitalOut mag(LED4);
+
+int main() {
+    
+    rgbsens.enablePowerAndRGBC();
+    rgbsens.setIntegrationTime(100);
+    
+    int color[4];
+    
+    while(1){
+    
+    //ledlight = PWMpwr;
+    rgbsens.getAllColors(color);
+    
+    if (550<color[1] && color[1]<700){
+        red = 1;
+        green = 0;
+        blue = 0;
+        mag = 0;
+        printf ("RED unfiltered: %d, red: %d, green: %d, blue: %d \n\r",color[0],color[1],color[2],color[3]);
+        }
+    else if (600<color[2] && color[2]<850){
+        red = 0;
+        green = 1;
+        blue = 0;
+        mag = 0;
+        printf ("GREEN unfiltered: %d, red: %d, green: %d, blue: %d \n\r",color[0],color[1],color[2],color[3]);
+        }
+    else if (200<color[3] && color[3]<400){
+        red = 0;
+        green = 0;
+        blue = 1;
+        mag = 0;
+        printf ("BLUE unfiltered: %d, red: %d, green: %d, blue: %d \n\r",color[0],color[1],color[2],color[3]);
+        }
+    else{
+        red = 0;
+        green = 0;
+        blue = 0;
+        mag = 0;
+        printf ("NONE unfiltered: %d, red: %d, green: %d, blue: %d \n\r",color[0],color[1],color[2],color[3]);
+        }
+        
+    wait(.2);
+    
+    }
+}
