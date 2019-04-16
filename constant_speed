@@ -1,0 +1,79 @@
+#include "mbed.h"
+#include "ContinuousServo.h"
+#include "TCS3472_I2C.h"
+#include "Tach.h"
+
+
+DigitalOut red(LED1);
+DigitalOut green(LED2);
+DigitalOut blue(LED3);
+ContinuousServo left(p23);
+ContinuousServo right(p26);
+Tach tLeft(p17,64);
+Tach tRight(p13,64);
+TCS3472_I2C rgb_sensor(p9, p10);
+float l_rpm;
+float r_rpm;
+float r_speed;
+float l_speed;
+char go;  
+char stop;                  
+
+
+int main() {
+    printf("Press 'g' to go.\n");
+    scanf("%c",&go);
+    
+    if (go == 'g') {
+        l_speed = 0.10;
+        r_speed = -0.10;
+        left.speed(l_speed);
+        right.speed(r_speed);
+        }
+    
+    while(1) {
+      
+        l_rpm = tLeft.getSpeed();
+        r_rpm = tRight.getSpeed();
+        printf("Left RPM is %f\n\r",l_rpm);
+        printf("Right RPM is %f\n\r",r_rpm);
+        printf("Left speed is %f\n\r",l_speed);
+        printf("Right speed is %f\n\r",r_speed);
+        
+        if (l_rpm < r_rpm && l_speed < 0.10) {
+            l_speed = l_speed + 0.01;
+            }
+            
+        if (r_rpm > l_rpm && r_speed > -0.10) {
+            r_speed = r_speed - 0.01;
+            }
+            
+         if (l_rpm > r_rpm && l_speed == 0.15) {
+            r_speed = r_speed + 0.01;
+            }
+            
+        if (r_rpm > l_rpm && r_speed == -0.15) {
+            l_speed = l_speed - 0.01;
+            }
+            
+      scanf("%c",&stop);
+      if (stop == 's') {
+        left.speed(0.0);
+        right.speed(0.0);
+        }
+        
+          scanf("%c",&go);
+      if (stop == 'g') {
+        left.speed(0.1);
+        right.speed(-0.1);
+        }
+        
+        
+        wait(.1);
+        
+        //myled = 1;
+        //wait(0.2);
+        //myled = 0;
+        //wait(0.2);
+    }
+}
