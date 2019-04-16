@@ -12,7 +12,7 @@ ContinuousServo right (p26); //servos
 
 int main() {
 while (1){
-d = sonar*(1/conversion); //d is distance in inches
+d = sonar.read()*(1/conversion); //d is distance in inches
 
 if (d<=5){
 break;
