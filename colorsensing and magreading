@@ -19,6 +19,16 @@ int main() {
     
     rgbsens.enablePowerAndRGBC();
     rgbsens.setIntegrationTime(100);
+    magsens.mode(PullUp);
+    
+    red = 0;
+    green = 0;
+    blue = 0;
+    mag = 0;
+    
+    int magstatus = 0;
+    
+    magpwr = 1;
     
     int color[4];
     
@@ -27,36 +37,45 @@ int main() {
     //ledlight = PWMpwr;
     rgbsens.getAllColors(color);
     
-    if (550<color[1] && color[1]<700){
+    if (color[1]>color[2] && color[1]>color[3] && color[0]<2000 && color[1]>200){
         red = 1;
         green = 0;
         blue = 0;
-        mag = 0;
         printf ("RED unfiltered: %d, red: %d, green: %d, blue: %d \n\r",color[0],color[1],color[2],color[3]);
         }
-    else if (600<color[2] && color[2]<850){
+    else if (color[2]>color[1] && color[2]>color[3] && color[0]<2000){
         red = 0;
         green = 1;
         blue = 0;
-        mag = 0;
         printf ("GREEN unfiltered: %d, red: %d, green: %d, blue: %d \n\r",color[0],color[1],color[2],color[3]);
         }
-    else if (200<color[3] && color[3]<400){
+    else if (color[3]>color[1] && color[3]>color[2] && color[0]<2000){
         red = 0;
         green = 0;
         blue = 1;
-        mag = 0;
         printf ("BLUE unfiltered: %d, red: %d, green: %d, blue: %d \n\r",color[0],color[1],color[2],color[3]);
         }
     else{
         red = 0;
         green = 0;
         blue = 0;
-        mag = 0;
         printf ("NONE unfiltered: %d, red: %d, green: %d, blue: %d \n\r",color[0],color[1],color[2],color[3]);
         }
-        
-    wait(.2);
+    
+    magstatus = magsens.read();
+    
+    if (magstatus == 1){
+        mag = 1;
+        printf("MAG Tripped, magstatus: %d \r\n", magstatus);
+        wait(.5);
+        magpwr = 0;
+        wait(.25);
+        magpwr = 1;
+        mag = 0;
+        printf("MAG RESET, magstatus: %d \r\n", magstatus);
+        }
+
+    wait(.1);
     
     }
 }
